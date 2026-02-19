@@ -6,7 +6,14 @@ import 'chat_screen.dart';
 import 'profile_screen.dart';
 
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  const MainShell({
+    super.key,
+    required this.onLogout,
+    this.userEmail,
+  });
+
+  final Future<void> Function() onLogout;
+  final String? userEmail;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -26,7 +33,10 @@ class _MainShellState extends State<MainShell> {
       const BudgetScreen(),
       const ChatScreen(),
       const GoalsScreen(),
-      const ProfileScreen(),
+      ProfileScreen(
+        userEmail: widget.userEmail,
+        onLogout: widget.onLogout,
+      ),
     ];
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),

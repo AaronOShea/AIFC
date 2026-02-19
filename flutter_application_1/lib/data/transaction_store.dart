@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import '../models/transaction_model.dart';
+import '../models/savings_goal_model.dart';
 
 class TransactionStore extends ChangeNotifier {
   final List<Transaction> _transactions = [];
   final Map<String, double> _categoryLimits = {};
+  final List<SavingsGoal> _goals = [];
 
   List<Transaction> get transactions => List.unmodifiable(_transactions);
 
@@ -98,5 +100,35 @@ class TransactionStore extends ChangeNotifier {
         .toList();
     list.sort((a, b) => b.date.compareTo(a.date));
     return list;
+  }
+
+  // ——— Savings goals ———
+  List<SavingsGoal> get goals => List.unmodifiable(_goals);
+
+  void addGoal(SavingsGoal goal) {
+    _goals.add(goal);
+    notifyListeners();
+  }
+
+  void removeGoal(String id) {
+    _goals.removeWhere((g) => g.id == id);
+    notifyListeners();
+  }
+
+  void updateGoalCurrentAmount(String id, double amount) {
+    final i = _goals.indexWhere((g) => g.id == id);
+    if (i >= 0) {
+      _goals[i].currentAmount = amount.clamp(0.0, double.infinity);
+      notifyListeners();
+    }
+  }
+
+  void addToGoal(String id, double amount) {
+    final i = _goals.indexWhere((g) => g.id == id);
+    if (i >= 0) {
+      _goals[i].currentAmount =
+          (_goals[i].currentAmount + amount).clamp(0.0, double.infinity);
+      notifyListeners();
+    }
   }
 }
